@@ -11,4 +11,7 @@ func routes(_ app: Application) throws {
     }
 
     try app.register(collection: TodoController())
+
+    let controller = AuthController()
+    app.post("register", use: controller.register)
 }
