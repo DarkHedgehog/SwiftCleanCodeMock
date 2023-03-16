@@ -9,7 +9,6 @@ import Foundation
 import Vapor
 
 struct RegisterRequest: Content {
-    var id_user: Int
     var username: String
     var password: String
     var email: String
