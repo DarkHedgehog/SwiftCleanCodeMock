@@ -11,6 +11,8 @@ func routes(_ app: Application) throws {
     }
 
     try app.register(collection: TodoController())
+    try app.register(collection: ProductsController())
+    try app.register(collection: BasketController())
 
     let controller = AuthController()
     app.post("register", use: controller.register)
