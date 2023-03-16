@@ -14,4 +14,9 @@ func routes(_ app: Application) throws {
 
     let controller = AuthController()
     app.post("register", use: controller.register)
+
+    let reviewController = ReviewController()
+    app.post("reviews", use: reviewController.reviewListForProduct)
+    app.post("reviewAdd", use: reviewController.reviewAddForProduct)
+    app.post("reviewDelete", use: reviewController.reviewDelete)
 }
