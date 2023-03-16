@@ -20,6 +20,10 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateProduct())
     app.migrations.add(CreateBasket())
 
+    print("debug-----")
+    print(Environment.get("DATABASE_HOST") ?? "localhost")
+    print("debug-----")
+    try app.autoMigrate().wait()
     // register routes
     try routes(app)
 }
