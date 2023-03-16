@@ -17,6 +17,8 @@ public func configure(_ app: Application) throws {
 
     app.migrations.add(CreateTodo())
     app.migrations.add(CreateUsers())
+    app.migrations.add(CreateProduct())
+    app.migrations.add(CreateBasket())
 
     // register routes
     try routes(app)
