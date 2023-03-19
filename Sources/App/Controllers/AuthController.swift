@@ -14,11 +14,21 @@ class AuthController {
         guard let body = try? req.content.decode(RegisterRequest.self) else {
             throw Abort(.badRequest)
         }
+        let shopDb = ShopDatabase.shared
+
+        let alreadyRegisteredUser = try await shopDb.userByName(body.username, db: req.db)
+
+        guard alreadyRegisteredUser == nil else {
+            return RegisterResponse(
+                result: -1,
+                error_message: "Пользователь уже зарегестрирован"
+            )
+        }
 
         let registerUser = UserRecord(
             balance: 100,
             username: body.username,
-            password: body.username,
+            password: body.password,
             email: body.email,
             gender: body.gender,
             credit_card: body.credit_card,
@@ -36,4 +46,19 @@ class AuthController {
 
         return response
     }
+
+    func login(_ req: Request) async throws -> LoginResponse {
+        guard let body = try? req.content.decode(LoginRequest.self) else {
+            throw Abort(.badRequest)
+        }
+
+        let shopDb = ShopDatabase.shared
+
+        guard let user = try await shopDb.userByName(body.username, password:body.password, db: req.db) else {
+            return LoginResponse(result: -1, error_message: "User not found")
+        }
+
+        return LoginResponse(result: 1, user: user, user_message: "Ok")
+    }
+
 }
