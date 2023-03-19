@@ -10,8 +10,7 @@ import Vapor
 
 struct RegisterResponse: Content {
     var result: Int
-    var id_user: UUID?
-    var balance: Double?
+    var user: UserRecord?
     var user_message: String?
     var error_message: String?
 }

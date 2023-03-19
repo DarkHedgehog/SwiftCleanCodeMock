@@ -25,6 +25,15 @@ final class ShopDatabase {
         return user
     }
 
+    public func userById(_ id: UUID, db: Database) async throws -> UserRecord? {
+        guard
+            let user = try await UserRecord.query(on: db).filter(\.$id == id).first() else {
+            return nil
+        }
+
+        return user
+    }
+
     public func userByName(_ userName: String, password: String, db: Database) async throws -> UserRecord? {
         guard
             !userName.isEmpty,

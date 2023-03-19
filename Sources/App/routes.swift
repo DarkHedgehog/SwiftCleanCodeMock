@@ -15,8 +15,10 @@ func routes(_ app: Application) throws {
     try app.register(collection: BasketController())
 
     let controller = AuthController()
-    app.post("register", use: controller.register)
     app.post("login", use: controller.login)
+    let profileController = ProfileController()
+    app.post("register", use: profileController.register)
+    app.post("updateProfile", use: profileController.update)
 
     let reviewController = ReviewController()
     app.post("reviews", use: reviewController.reviewListForProduct)
