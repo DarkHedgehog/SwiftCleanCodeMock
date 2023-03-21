@@ -76,4 +76,27 @@ class ProfileController {
 
         return response
     }
+
+    func getProfile(_ req: Request) async throws -> ProfileReadResponse {
+        guard let body = try? req.content.decode(ProfileReadRequest.self) else {
+            throw Abort(.badRequest)
+        }
+        let shopDb = ShopDatabase.shared
+
+        guard let existsUser = try await shopDb.userById(body.id, db: req.db) else {
+            return ProfileReadResponse(
+                result: -1,
+                error_message: "User not found"
+            )
+        }
+
+        let response = ProfileReadResponse(
+            result: 1,
+            user: existsUser,
+            user_message: "Profile info",
+            error_message: nil
+        )
+
+        return response
+    }
 }

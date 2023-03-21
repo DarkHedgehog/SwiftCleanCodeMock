@@ -16,9 +16,11 @@ func routes(_ app: Application) throws {
 
     let controller = AuthController()
     app.post("login", use: controller.login)
+
     let profileController = ProfileController()
     app.post("register", use: profileController.register)
     app.post("updateProfile", use: profileController.update)
+    app.get("getProfile", use: profileController.getProfile)
 
     let reviewController = ReviewController()
     app.post("reviews", use: reviewController.reviewListForProduct)
