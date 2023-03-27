@@ -9,7 +9,8 @@ import Foundation
 import Vapor
 
 struct ReviewAddRequest: Content {
-    var id_user: Int
-    var id_product: Int
+    var userId: UUID
+    var productId: UUID
+    var stars: Int
     var text: String
 }

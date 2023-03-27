@@ -9,5 +9,5 @@ import Foundation
 import Vapor
 
 struct ReviewListRequest: Content {
-    var id_product: Int
+    var productId: UUID
 }

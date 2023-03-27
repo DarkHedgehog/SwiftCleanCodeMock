@@ -29,6 +29,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateUsers())
     app.migrations.add(CreateProduct())
     app.migrations.add(CreateBasket())
+    app.migrations.add(CreateReview())
 
     try app.autoMigrate().wait()
     // register routes

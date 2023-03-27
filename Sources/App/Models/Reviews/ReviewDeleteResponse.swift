@@ -9,6 +9,8 @@ import Foundation
 import Vapor
 
 struct ReviewDeleteResponse: Content {
-    var id_review: Int
-    var message: String
+    var result: Int
+    var reviewId: UUID
+    var error_message: String?
+    var message: String?
 }

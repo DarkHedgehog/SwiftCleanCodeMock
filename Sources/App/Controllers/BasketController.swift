@@ -70,6 +70,4 @@ struct BasketController: RouteCollection {
 
         return try await basketForUser(req: req)
     }
-
 }
-
