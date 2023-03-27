@@ -25,7 +25,6 @@ class ReviewController {
 
         var result: [ReviewDetail] = []
 
-
         for review in reviews {
             if let reviewId = review.id,
                let user = try await shopDb.userById(review.userId, db: req.db) {
@@ -53,8 +52,6 @@ class ReviewController {
         guard let body = try? req.content.decode(ReviewAddRequest.self) else {
             throw Abort(.badRequest)
         }
-
-        let shopDb = ShopDatabase.shared
 
         let reviewRecord = Review(
             productId: body.productId,
