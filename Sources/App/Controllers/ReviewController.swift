@@ -38,14 +38,13 @@ class ReviewController {
             }
         }
 
-        let response = ReviewsListResponse(
+        let answer = ReviewsListResponse(
             result: 1,
             error_message: nil,
             productId: body.productId,
             reviews: result
         )
-
-        return response
+        return answer
     }
 
     func reviewAddForProduct(_ req: Request) async throws -> ReviewAddResponse {

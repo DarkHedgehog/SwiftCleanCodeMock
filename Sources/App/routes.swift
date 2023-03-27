@@ -23,7 +23,7 @@ func routes(_ app: Application) throws {
     app.get("getProfile", use: profileController.getProfile)
 
     let reviewController = ReviewController()
-    app.get("reviews", use: reviewController.reviewListForProduct)
+    app.post("reviews", use: reviewController.reviewListForProduct)
     app.post("reviewAdd", use: reviewController.reviewAddForProduct)
     app.post("reviewDelete", use: reviewController.reviewDelete)
 }
