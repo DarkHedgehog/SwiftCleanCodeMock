@@ -34,7 +34,8 @@ class ReviewController {
                         product: product,
                         user: user,
                         stars: review.stars,
-                        text: review.text))
+                        text: review.text)
+                )
             }
         }
 
