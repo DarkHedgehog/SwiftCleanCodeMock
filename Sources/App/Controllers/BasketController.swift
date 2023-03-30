@@ -60,23 +60,25 @@ struct BasketController: RouteCollection {
     }
 
     func basketPayProducts(req: Request) async throws -> BasketReadResponse {
+        let shopDb = ShopDatabase.shared
+
+        do {
+            let signRequest = try req.content.decode(BasketPayForAllRequest.self)
+            if signRequest.sign != "i swear" {
+                return BasketReadResponse(result: -2, error_message: "Incorrect sign")
+            }
+        } catch {
+            return BasketReadResponse(result: -1, error_message: "Product not found")
+        }
+
         guard
             let uuidString = req.parameters.get("userID"),
             let userId: UUID = UUID(uuidString: uuidString),
-            let user = try await UserRecord.query(on: req.db).filter(\.$id == userId).first() else {
+            let _ = try await UserRecord.query(on: req.db).filter(\.$id == userId).first() else {
             throw Abort(.notFound)
         }
 
-        let basket = try await Basket.query(on: req.db).filter( \.$userId == userId).all()
-        let productIds = basket.map { $0.productId }
-        let products = try await Product.query(on: req.db).filter(\.$id ~~ productIds).all()
-
-        for item in basket {
-            if let product = try await Product.query(on: req.db).filter(\.$id == item.productId).first() {
-                user.balance -= product.cost
-            }
-            try await item.delete(on: req.db)
-        }
+        _ = try await shopDb.payForAll(userId: userId, db: req.db)
 
         return try await basketForUser(req: req)
     }

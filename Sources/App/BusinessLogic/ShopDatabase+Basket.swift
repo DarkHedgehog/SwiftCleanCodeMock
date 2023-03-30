@@ -24,7 +24,7 @@ extension ShopDatabase {
 
         let basket = UserBasket(
             userId: userId,
-            product: products,
+            products: products,
             totalCost: totalCost,
             balance: user.balance
         )
@@ -41,5 +41,25 @@ extension ShopDatabase {
         try await basketItem.save(on: db)
 
         return basketItem
+    }
+
+    public func payForAll(userId: UUID, db: Database) async throws -> UserBasket? {
+        guard
+            let user = try await userById(userId, db: db) else {
+            return nil
+        }
+
+        let basketItems = try await Basket.query(on: db).filter( \.$userId == userId).all()
+
+        for item in basketItems {
+            if let product = try await Product.query(on: db).filter(\.$id == item.productId).first() {
+                user.balance -= product.cost
+            }
+            try await item.delete(on: db)
+        }
+
+        try await user.save(on: db)
+
+        return try await basketForUser(userId, db: db)
     }
 }

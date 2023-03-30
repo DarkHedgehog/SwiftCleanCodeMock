@@ -10,7 +10,7 @@ import Vapor
 
 struct UserBasket: Content {
     let userId: UUID
-    let product: [Product]
+    let products: [Product]
     let totalCost: Double
     let balance: Double
 }
