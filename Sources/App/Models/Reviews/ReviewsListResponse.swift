@@ -9,6 +9,8 @@ import Foundation
 import Vapor
 
 struct ReviewsListResponse: Content {
-    var id_product: Int
-    var reviews: [Review]
+    var result: Int
+    var error_message: String?
+    var productId: UUID?
+    var reviews: [ReviewDetail]?
 }

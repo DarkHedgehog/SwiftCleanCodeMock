@@ -43,7 +43,34 @@ final class ShopDatabase {
                 .first() else {
             return nil
         }
-
         return user
+    }
+
+    public func productById(_ id: UUID, db: Database) async throws -> Product? {
+        guard
+            let product = try await Product.query(on: db).filter(\.$id == id).first() else {
+            return nil
+        }
+
+        return product
+    }
+
+    public func reviewsByProductId(_ id: UUID, db: Database) async throws -> [Review]? {
+        guard
+            let _ = try await productById(id, db: db) else {
+            return nil
+        }
+
+        let reviews = try await Review.query(on: db).filter(\.$productId == id).all()    
+
+        return reviews
+    }
+
+    public func reviewById(_ id: UUID, db: Database) async throws -> Review? {
+        guard
+            let review = try await Review.query(on: db).filter(\.$id == id).first() else {
+            return nil
+        }
+        return review
     }
 }

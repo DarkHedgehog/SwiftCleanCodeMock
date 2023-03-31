@@ -17,7 +17,7 @@ struct BasketController: RouteCollection {
         }
 
         let payBasket = routes.grouped("payBasket")
-        basket.group(":userID") { user in
+        payBasket.group(":userID") { user in
             user.post(use: basketPayProducts)
         }
     }
@@ -70,6 +70,4 @@ struct BasketController: RouteCollection {
 
         return try await basketForUser(req: req)
     }
-
 }
-

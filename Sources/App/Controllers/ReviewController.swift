@@ -9,54 +9,94 @@ import Foundation
 import Vapor
 
 class ReviewController {
-    func reviewListForProduct(_ req: Request) throws -> EventLoopFuture<ReviewsListResponse> {
+    
+    func reviewListForProduct(_ req: Request) async throws -> ReviewsListResponse {
         guard let body = try? req.content.decode(ReviewListRequest.self) else {
             throw Abort(.badRequest)
         }
 
-        print(body)
+        let shopDb = ShopDatabase.shared
 
-        let response = ReviewsListResponse(
-            id_product: body.id_product,
-            reviews: ReviewsStorage.shared.getReviewsBy(productId: body.id_product)
+        guard
+            let product = try await shopDb.productById(body.productId, db: req.db),
+            let reviews = try await shopDb.reviewsByProductId(body.productId, db: req.db) else {
+            return ReviewsListResponse(result: -1, error_message: "Product not found")
+        }
+
+        var result: [ReviewDetail] = []
+
+        for review in reviews {
+            if let reviewId = review.id,
+               let user = try await shopDb.userById(review.userId, db: req.db) {
+                result.append(
+                    ReviewDetail(
+                        id: reviewId,
+                        product: product,
+                        user: user,
+                        stars: review.stars,
+                        text: review.text)
+                )
+            }
+        }
+
+        let answer = ReviewsListResponse(
+            result: 1,
+            error_message: nil,
+            productId: body.productId,
+            reviews: result
         )
-
-        return req.eventLoop.future(response)
+        return answer
     }
 
-    func reviewAddForProduct(_ req: Request) throws -> EventLoopFuture<ReviewAddResponse> {
+    func reviewAddForProduct(_ req: Request) async throws -> ReviewAddResponse {
         guard let body = try? req.content.decode(ReviewAddRequest.self) else {
             throw Abort(.badRequest)
         }
 
-        print(body)
+        let reviewRecord = Review(
+            productId: body.productId,
+            userId: body.userId,
+            stars: body.stars,
+            text: body.text)
 
-        let reviewId = ReviewsStorage.shared.addReviewFor(
-            product: body.id_product,
-            by: body.id_user,
-            text: body.text
+        try await reviewRecord.save(on: req.db)
+
+        let response = ReviewAddResponse(
+            reviewId: reviewRecord.id,
+            result: 1,
+            error_message: nil
         )
 
-        let response = ReviewAddResponse(id_review: reviewId)
-
-        return req.eventLoop.future(response)
+        return response
     }
 
-    func reviewDelete(_ req: Request) throws -> EventLoopFuture<ReviewDeleteResponse> {
+    func reviewDelete(_ req: Request) async throws -> ReviewDeleteResponse {
         guard let body = try? req.content.decode(ReviewDeleteRequest.self) else {
             throw Abort(.badRequest)
         }
 
-        print(body)
+        let shopDb = ShopDatabase.shared
 
-        let result = ReviewsStorage.shared.deleteReview(review: body.id_review, byUser: body.id_user)
-        if result {
-            let response = ReviewDeleteResponse(id_review: body.id_review, message: "Review has been removed")
-            return req.eventLoop.future(response)
-        } else {
-            let response = ReviewDeleteResponse(id_review: body.id_review, message: "Error")
-            return req.eventLoop.future(response)
+        // check for user exists
+        guard let _ = try await shopDb.userById(body.userId, db: req.db) else {
+            return ReviewDeleteResponse(
+                result: -1,
+                reviewId: body.reviewId,
+                error_message: "User not found")
         }
-    }
 
+        guard let reviewRecord = try await shopDb.reviewById(body.reviewId, db: req.db) else {
+            return ReviewDeleteResponse(
+                result: -1,
+                reviewId: body.reviewId,
+                error_message: "Review not found")
+        }
+
+        try await reviewRecord.delete(on: req.db)
+
+        return ReviewDeleteResponse(
+            result: 1,
+            reviewId: body.reviewId,
+            message: "Review removed")
+    }
 }

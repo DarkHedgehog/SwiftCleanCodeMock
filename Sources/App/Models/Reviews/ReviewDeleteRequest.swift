@@ -9,6 +9,6 @@ import Foundation
 import Vapor
 
 struct ReviewDeleteRequest: Content {
-    var id_user: Int
-    var id_review: Int
+    var userId: UUID
+    var reviewId: UUID
 }

@@ -9,5 +9,7 @@ import Foundation
 import Vapor
 
 struct ReviewAddResponse: Content {
-    var id_review: Int
+    var reviewId: UUID?
+    var result: Int
+    var error_message: String?
 }
